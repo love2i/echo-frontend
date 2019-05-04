@@ -1,0 +1,144 @@
+<template>
+  <div>
+    <el-table :data="tableData.list" v-loading="isLoading">
+      <el-table-column v-for="(config,index) in tableConfig"
+                       :key="index"
+                       :prop="config.prop"
+                       :label="config.label"
+                       :sortable="config.sortable">
+      </el-table-column>
+
+      <el-table-column label="当前状态">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.status===0" type="warning" size="medium">待处理</el-tag>
+          <el-tag v-else-if="scope.row.status===1" type="primary" size="medium">处理中</el-tag>
+          <el-tag v-else type="success" size="medium">已完成</el-tag>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-button type="primary" @click="fuck(scope.row)">修改状态</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <el-dialog
+            title="提示"
+            :visible.sync="dialogVisible"
+            width="30%">
+      <el-form>
+        <el-form-item label="当前状态">
+          <el-select placeholder="当前状态" v-model="status">
+            <el-option label="未处理" :value="0"></el-option>
+            <el-option label="处理中" :value="1"></el-option>
+            <el-option label="已完成" :value="2"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="updateState()">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <div class="pagination">
+      <el-pagination
+              background
+              :page-size="page.pageSize"
+              :page-count="page.pages"
+              :current-page="page.pageNum"
+              :total="page.total"
+              @current-change="handleChange"
+              layout="prev, pager, next">
+      </el-pagination>
+    </div>
+  </div>
+</template>
+
+<script>
+  import {GET_ALL_REPAIRS} from "../../apis/complaint";
+
+  export default {
+    name: "RepairList",
+    data() {
+      return {
+        isLoading:false,
+        tableData: {},
+        tableConfig: [
+            {
+          label: 'id',
+          prop: 'id',
+          sortable: false
+        }, {
+          label: '宿舍',
+          prop: 'd_id',
+          sortable: false
+        }, {
+          label: '学生',
+          prop: 's_id',
+          sortable: false
+        }, {
+          label: '报修内容',
+          prop: 'content',
+          sortable: false
+        }, {
+          label: '联系电话',
+          prop: 'telephone',
+          sortable: false
+        }],
+        dialogVisible:false,
+        status:'',
+        page:{
+          pageSize:10,
+          pages:1,
+          pageNum:1,
+          total:0
+        },
+        selected:''
+      }
+    },
+    methods: {
+      getRepairList() {
+        this.isLoading=true
+        this.$axios.get('https://api.echo.ituoniao.net/api/web/repair/getAllRepairs?pageNum='+this.page.pageNum+'&pageSize='+this.page.pageSize)
+            .then(res => {
+              if (res.success) {
+                this.tableData = res.data
+              } else {
+                this.$message.error('获取维修列表出错')
+              }
+            })
+        this.isLoading=false
+      },
+      updateState(){
+        this.$axios.get('https://api.echo.ituoniao.net/api/web/repair/changeStatus?id='+this.selected.id+'&status='+this.status)
+            .then(res=>{
+              if (res.success){
+                this.$message({message:'修改成功',type:'success'})
+                this.getRepairList()
+              } else{
+                this.$message.error('出错了哦：'+res.errMsg)
+              }
+            })
+        this.dialogVisible=false
+      },
+      handleChange(val){
+        this.pageNum.pageNum=val
+        this.getRepairList()
+      },
+      fuck(row){
+        this.selected=row
+        this.status=row.status
+        this.dialogVisible=true
+      }
+    },
+    mounted() {
+      this.getRepairList()
+    }
+  }
+</script>
+
+<style scoped>
+
+</style>
