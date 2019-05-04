@@ -1,4 +1,4 @@
-# fuck-rgsj
+# echo-frontend
 
 ## Project setup
 ```
