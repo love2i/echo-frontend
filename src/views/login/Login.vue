@@ -22,7 +22,7 @@
 <script>
   import {ADMIN_LOGIN, LOGIN} from '@/apis/user'
   import Cookie from 'js-cookie'
-  import Loading from '../../components/common/TopLoading'
+  import Loading from '../../components/topLoading/TopLoading'
 
   export default {
     name: 'Login',

@@ -1,5 +1,5 @@
 {
-  "message": "你好，i18n",
+  "message": "hello,i18n",
   "route": {
     "dashboard":"dashboard",
     "permission": "permission",
