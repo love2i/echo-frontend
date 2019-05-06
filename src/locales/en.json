@@ -1,3 +1,32 @@
 {
-  "message": "hello i18n !!"
+  "message": "你好，i18n",
+  "route": {
+    "dashboard":"dashboard",
+    "permission": "permission",
+    "excel": "excel",
+    "excel-import": "excel import",
+    "excel-export": "excel export",
+    "dormitory": "dormitory",
+    "dormitory-list": "dormitory list",
+    "save-dormitory": "save dormitory",
+    "complaint": "complaint",
+    "complaint-list": "complaint list",
+    "fee": "fee",
+    "fee-list": "fee list",
+    "info": "info",
+    "info-post": "information post",
+    "info-detail": "information detail",
+    "info-list": "information list",
+    "question": "question",
+    "question-list": "question list",
+    "question-post": "post question",
+    "question-detail": "question detail",
+    "worker": "worker",
+    "worker-list": "worker list",
+    "repair": "repair",
+    "repair-list": "repair list"
+  },
+  "date": "Current date is ",
+  "chooseLanguage": "language",
+  "welcome": "Welcome to FZU management system "
 }

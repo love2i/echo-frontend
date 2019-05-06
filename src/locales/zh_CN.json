@@ -1,0 +1,32 @@
+{
+  "message": "你好，i18n",
+  "route": {
+    "dashboard":"首页",
+    "permission": "权限",
+    "excel": "excel",
+    "excel-import": "excel导入",
+    "excel-export": "excel导出",
+    "dormitory": "宿舍",
+    "dormitory-list": "宿舍列表",
+    "save-dormitory": "添加宿舍",
+    "complaint": "投诉",
+    "complaint-list": "投诉列表",
+    "fee": "费用",
+    "fee-list": "费用列表",
+    "info": "消息",
+    "info-post": "消息推送",
+    "info-detail": "消息详情",
+    "info-list": "消息列表",
+    "question": "问卷",
+    "question-list": "问卷列表",
+    "question-post": "问卷推送",
+    "question-detail": "问卷详情",
+    "worker": "员工",
+    "worker-list": "员工列表",
+    "repair": "维修",
+    "repair-list": "维修列表"
+  },
+  "date": "当前日期是 ",
+  "chooseLanguage": "选择语言",
+  "welcome": "欢迎来到福州大学物业管理系统 "
+}
