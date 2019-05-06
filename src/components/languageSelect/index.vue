@@ -1,15 +1,12 @@
 <template>
   <div>
     <el-dropdown>
-  <span class="el-dropdown-link">
-    下拉菜单<i class="el-icon-arrow-down el-icon--right"></i>
-  </span>
+      <span class="el-dropdown-link">
+        {{this.$t('chooseLanguage')}}<i class="el-icon-arrow-down el-icon--right"></i>
+      </span>
       <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item>黄金糕</el-dropdown-item>
-        <el-dropdown-item>狮子头</el-dropdown-item>
-        <el-dropdown-item>螺蛳粉</el-dropdown-item>
-        <el-dropdown-item disabled>双皮奶</el-dropdown-item>
-        <el-dropdown-item divided>蚵仔煎</el-dropdown-item>
+        <el-dropdown-item><span @click="changeLanguage('zh_CN')">中文</span></el-dropdown-item>
+        <el-dropdown-item><span @click="changeLanguage('en')">English</span></el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
   </div>
@@ -17,13 +14,16 @@
 
 <script>
   export default {
-    name: "LanguageSelect",
-    components:{
-      LanguageSelect
+    methods:{
+      changeLanguage(locale){
+        this.$i18n.locale=locale
+      }
     }
   }
 </script>
 
 <style scoped>
-
+.el-dropdown-link{
+  color: white;
+}
 </style>
