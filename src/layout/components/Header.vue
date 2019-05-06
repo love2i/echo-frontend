@@ -4,6 +4,7 @@
       <h2>Welcome to FZU management</h2>
     </div>
     <div class="info">
+      <language-select></language-select>
       <i class="el-icon-search"></i>
       <i class="el-icon-edit"></i>
       <i class="el-icon-share"></i>
@@ -11,21 +12,24 @@
       <i class="el-icon-info"></i>
       <i class="el-icon-error"></i>
       <i class="el-icon-caret-bottom"></i>
-      <el-dropdown size="small">
-                <span class="el-dropdown-link">
-                    下拉菜单
-                    <i class="el-icon-arrow-down el-icon--right"></i>
-                </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item><span @click="openInfoDialog">我的信息</span></el-dropdown-item>
-<!--          <el-dropdown-item>个人设置</el-dropdown-item>-->
-          <el-dropdown-item>
-            <span style="display: block" @click="logout">登出</span>
-          </el-dropdown-item>
-<!--          <el-dropdown-item>其他</el-dropdown-item>-->
-<!--          <el-dropdown-item>fuck</el-dropdown-item>-->
-        </el-dropdown-menu>
-      </el-dropdown>
+      <div>
+        <el-dropdown size="small">
+          <!--                <span class="el-dropdown-link">-->
+          <!--                    下拉菜单-->
+          <!--                    <i class="el-icon-arrow-down el-icon&#45;&#45;right"></i>-->
+          <!--                </span>-->
+          <logo></logo>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item><span @click="openInfoDialog">我的信息</span></el-dropdown-item>
+            <!--          <el-dropdown-item>个人设置</el-dropdown-item>-->
+            <el-dropdown-item>
+              <span style="display: block" @click="logout">登出</span>
+            </el-dropdown-item>
+            <!--          <el-dropdown-item>其他</el-dropdown-item>-->
+            <!--          <el-dropdown-item>fuck</el-dropdown-item>-->
+          </el-dropdown-menu>
+        </el-dropdown>
+      </div>
     </div>
 
     <el-dialog
@@ -46,21 +50,27 @@
 </template>
 
 <script>
+  import LanguageSelect from '@/components/languageSelect'
+  import Logo from './Logo'
+
   export default {
     name: 'Header',
+    components: {
+      LanguageSelect, Logo
+    },
     data() {
       return {
         showInfoDialog: false,
-        info:this.$store.getters.workerInfo
+        info: this.$store.getters.workerInfo
       }
     },
     methods: {
       openInfoDialog() {
         this.showInfoDialog = true
       },
-      async logout(){
+      async logout() {
         await this.$store.dispatch('logout')
-        this.$router.push({path:'/login'})
+        this.$router.push({path: '/login'})
       }
     }
   }

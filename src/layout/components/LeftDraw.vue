@@ -15,7 +15,8 @@
           <template slot="title" class="menu-title">
             <i class="fas" :class="'fa-'+route.meta.icon" style="margin-right: 10px"></i>
 <!--            <font-awesome-icon :icon="route.meta.icon" />-->
-            <span>{{route.name}}</span>
+<!--            <span>{{route.name}}</span>-->
+            <span>{{getTitle(route.meta.title)}}</span>
           </template>
           <Submenu :menus="route.children"></Submenu>
 
@@ -41,7 +42,10 @@
     mounted() {
       this.routes = this.$store.state.routes
     },
-    beforeMount() {
+    methods:{
+      getTitle(title){
+        return this.$t('route.'+title)
+      }
     }
   }
 </script>
