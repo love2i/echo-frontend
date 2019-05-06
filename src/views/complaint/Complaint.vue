@@ -70,14 +70,9 @@
         dialogVisible: false,
         tableData: {},
         tableConfig: [
-          // {
-          //   label: '宿舍号',
-          //   prop: 'dormId',
-          //   sortable: true
-          // },
           {
             label: '学生',
-            prop: 's_id',
+            prop: 'student_id',
             sortable: true
           }, {
             label: '投诉内容',
@@ -92,11 +87,6 @@
             prop: 'time',
             sortable: true
           },
-          // {
-          //   label: '状态',
-          //   prop: 'status',
-          //   sortable: false
-          // }
         ],
         page:{
           pageSize:10,
@@ -140,7 +130,7 @@
             .then(res=>{
               if (res.success){
                 this.$message({message:'修改成功',type:'success'})
-                this.getRepairList()
+                this.getComplaints()
               } else{
                 this.$message.error('出错了哦：'+res.errMsg)
               }
@@ -154,7 +144,6 @@
         this.dialogVisible = false
       },
       filterHandler(value, row, column) {
-        console.log('aaaaaaaaa')
       },
       handleChange(val){
         this.isLoading=true

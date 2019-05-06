@@ -1,13 +1,15 @@
 <template>
   <div>
-    <h1>dashboard</h1>
-    <h3>you are now login as <strong>{{role}}</strong></h3>
-    <countTo :startVal='1900' :endVal='date.getFullYear()' :duration='duration'></countTo>年
-    <countTo :startVal='0' :endVal='date.getMonth()+1' :duration='duration'></countTo>月
-    <countTo :startVal='0' :endVal='date.getDate()' :duration='duration'></countTo>日
-    <countTo :startVal='0' :endVal='date.getHours()' :duration='duration'></countTo>:
-    <countTo :startVal='0' :endVal='date.getMinutes()' :duration='duration'></countTo>:
-    <countTo :startVal='0' :endVal='date.getSeconds()' :duration='duration'></countTo>
+    <h1>{{this.$t('welcome')}}[{{workerId}}]</h1>
+    <div class="date">
+      <span>{{this.$t('date')}}</span>
+      <countTo class="count" :startVal='1900' :endVal='date.getFullYear()' :duration='duration'></countTo><span class="tag">/</span>
+      <countTo class="count" :startVal='0' :endVal='date.getMonth()+1' :duration='duration'></countTo><span class="tag">/</span>
+      <countTo class="count" :startVal='0' :endVal='date.getDate()' :duration='duration'></countTo><span class="tag">&nbsp</span>
+      <countTo class="count" :startVal='0' :endVal='date.getHours()' :duration='duration'></countTo><span class="tag">:</span>
+      <countTo class="count" :startVal='0' :endVal='date.getMinutes()' :duration='duration'></countTo><span class="tag">:</span>
+      <countTo class="count" :startVal='0' :endVal='date.getSeconds()' :duration='duration'></countTo>
+    </div>
   </div>
 </template>
 
@@ -23,14 +25,26 @@
       return {
         role: this.$store.getters.roles,
         duration:5000,
+        workerId:this.$store.getters.workerInfo.workerId
       }
     },
     computed:{
-      date:()=>new Date()
+      date:function () {
+        return new Date()
+      }
+    },
+    mounted() {
     }
   }
 </script>
 
 <style scoped>
-
+  .date{
+    font-size: 3em;
+  }
+  .count {
+    color: #30B08F;
+    display: inline-block;
+    margin: 10px 0;
+  }
 </style>

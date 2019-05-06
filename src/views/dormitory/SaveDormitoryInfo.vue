@@ -67,7 +67,7 @@
       <el-upload
               class="upload-demo"
               drag
-              action=""
+              action="/"
               multiple>
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
@@ -106,10 +106,10 @@
           name:this.form.name,
           tel:this.form.telephone,
           studentId:this.form.studentId,
-          is_leader:0,
           zone:Number.parseInt(this.form.zone),
           building:Number.parseInt(this.form.building),
-          room:Number.parseInt(this.form.room)
+          room:Number.parseInt(this.form.room),
+          is_leader:0
         }
         this.$axios.post('https://api.echo.ituoniao.net/api/web/dormitory/saveDormitory',postData)
             .then(res=>{

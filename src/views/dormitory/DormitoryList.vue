@@ -215,7 +215,7 @@
         this.form.telephone = this.tableList[index].telephone
       },
       handleDeleteConfirm() {
-        this.$axios.delete('https://api.echo.ituoniao.net/api/web/dormitory/removeById?id='+this.selected.id)
+        this.$axios.get('https://api.echo.ituoniao.net/api/web/dormitory/removeById?id='+this.selected.id)
             .then(res => {
               if (res.success) {
                 this.$message({message: '删除成功', type: 'success'})
@@ -232,11 +232,12 @@
       },
       handleEditConfirm() {
         let postData={
+          id:this.selected.id,
           zone:Number.parseInt(this.form.zone),
           building:Number.parseInt(this.form.building),
           room:Number.parseInt(this.form.room)
         }
-        this.$axios.post('https://api.echo.ituoniao.net/api/web/dormitory/updateById?id='+this.selected.id,postData)
+        this.$axios.post('https://api.echo.ituoniao.net/api/web/dormitory/updateById',postData)
             .then(res => {
               console.log(res)
               if (res.success) {

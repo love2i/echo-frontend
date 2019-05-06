@@ -1,22 +1,24 @@
 <template>
   <div class="wrapper">
     <div class="left-edit">
-      <div>
-        <el-button type="primary" @click="addQuestion()">添加一个问题</el-button>
-        <el-button type="info" @click="showDialog=!showDialog">预览</el-button>
-        <el-button type="success" @click="publish()">发布</el-button>
-      </div>
+      <div class="top">
+        <div>
+          <el-button type="primary" @click="addQuestion()">添加一个问题</el-button>
+          <el-button type="info" @click="showDialog=!showDialog">预览</el-button>
+          <el-button type="success" @click="publish()">发布</el-button>
+        </div>
 
-      <div>
-        <el-date-picker
-                v-model="timerange"
-                type="datetimerange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                format="yyyy 年 MM 月 dd 日"
-                value-format="yyyy-MM-dd HH:mm:ss">
-        </el-date-picker>
+        <div>
+          <el-date-picker
+                  v-model="timerange"
+                  type="datetimerange"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd HH:mm:ss">
+          </el-date-picker>
+        </div>
       </div>
       <div>
         <el-input size="large" v-model="title"></el-input>
@@ -162,7 +164,7 @@
   .options-wrapper {
     display: flex;
     flex-direction: row;
-    justify-content: left;
+    justify-content: space-between;
     margin-top: 10px;
   }
 
@@ -197,5 +199,11 @@
     flex-direction: row;
     align-items: flex-start;
     justify-content: space-between;
+  }
+  .top{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 1em;
   }
 </style>

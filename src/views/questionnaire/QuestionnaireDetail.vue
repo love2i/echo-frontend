@@ -1,6 +1,7 @@
 <template>
   <div class="wrapper">
     <h1 class="">问卷详情</h1>
+    <h4>{{detail.start_time}}------{{detail.end_time}}</h4>
     <div class="detail">
       <div v-for="(q,index) in detail.questions">
         <div class="title">

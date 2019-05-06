@@ -1,23 +1,29 @@
 <template>
   <div>
-    <el-button @click="test()">aaa</el-button>
+    <p>{{$t('route.dashboard')}}</p>
+    <el-button @click="changeLanguage">switch language</el-button>
+    <p>title=>{{title}}</p>
+    <div>
+      <language-select></language-select>
+    </div>
   </div>
 </template>
 
 <script>
-  import {TEST} from "../../apis/user";
+  import LanguageSelect from '@/components/languageSelect'
 
   export default {
-    methods:{
-      test() {
-        let postData={
-          username:'2222',
-          password:'111'
-        }
-        TEST(postData)
-            .then(res=>{
-              console.log(res)
-            })
+    name: 'Test',
+    components: {LanguageSelect},
+    computed: {
+      title: function () {
+        return this.$t('route.' + 'dashboard')
+      }
+    },
+    methods: {
+      changeLanguage() {
+        this.$i18n.locale = this.$i18n.locale === 'en' ? 'zh_CN' : 'en'
+        console.log('after change language=>', this.$i18n.locale)
       }
     }
   }

@@ -63,45 +63,51 @@
     name: "RepairList",
     data() {
       return {
-        isLoading:false,
+        isLoading: false,
         tableData: {},
         tableConfig: [
-            {
-          label: 'id',
-          prop: 'id',
-          sortable: false
-        }, {
-          label: '宿舍',
-          prop: 'd_id',
-          sortable: false
-        }, {
-          label: '学生',
-          prop: 's_id',
-          sortable: false
-        }, {
-          label: '报修内容',
-          prop: 'content',
-          sortable: false
-        }, {
-          label: '联系电话',
-          prop: 'telephone',
-          sortable: false
-        }],
-        dialogVisible:false,
-        status:'',
-        page:{
-          pageSize:10,
-          pages:1,
-          pageNum:1,
-          total:0
+          // {
+          //   label: 'id',
+          //   prop: 'id',
+          //   sortable: false
+          // },
+          {
+            label: '学生',
+            prop: 'student_id',
+            sortable: false
+          },
+          {
+            label: '楼号',
+            prop: 'building',
+            sortable: false
+          }, {
+            label: '宿舍',
+            prop: 'room',
+            sortable: false
+          }, {
+            label: '报修内容',
+            prop: 'content',
+            sortable: false
+          }, {
+            label: '联系电话',
+            prop: 'telephone',
+            sortable: false
+          }],
+        dialogVisible: false,
+        status: '',
+        page: {
+          pageSize: 10,
+          pages: 1,
+          pageNum: 1,
+          total: 0
         },
-        selected:''
+        selected: ''
       }
     },
     methods: {
       getRepairList() {
-        this.isLoading=true
-        this.$axios.get('https://api.echo.ituoniao.net/api/web/repair/getAllRepairs?pageNum='+this.page.pageNum+'&pageSize='+this.page.pageSize)
+        this.isLoading = true
+        this.$axios.get('https://api.echo.ituoniao.net/api/web/repair/getAllRepairs?pageNum=' + this.page.pageNum + '&pageSize=' + this.page.pageSize)
             .then(res => {
               if (res.success) {
                 this.tableData = res.data
@@ -109,28 +115,28 @@
                 this.$message.error('获取维修列表出错')
               }
             })
-        this.isLoading=false
+        this.isLoading = false
       },
-      updateState(){
-        this.$axios.get('https://api.echo.ituoniao.net/api/web/repair/changeStatus?id='+this.selected.id+'&status='+this.status)
-            .then(res=>{
-              if (res.success){
-                this.$message({message:'修改成功',type:'success'})
+      updateState() {
+        this.$axios.get('https://api.echo.ituoniao.net/api/web/repair/changeStatus?id=' + this.selected.id + '&status=' + this.status)
+            .then(res => {
+              if (res.success) {
+                this.$message({message: '修改成功', type: 'success'})
                 this.getRepairList()
-              } else{
-                this.$message.error('出错了哦：'+res.errMsg)
+              } else {
+                this.$message.error('出错了哦：' + res.errMsg)
               }
             })
-        this.dialogVisible=false
+        this.dialogVisible = false
       },
-      handleChange(val){
-        this.pageNum.pageNum=val
+      handleChange(val) {
+        this.pageNum.pageNum = val
         this.getRepairList()
       },
-      fuck(row){
-        this.selected=row
-        this.status=row.status
-        this.dialogVisible=true
+      fuck(row) {
+        this.selected = row
+        this.status = row.status
+        this.dialogVisible = true
       }
     },
     mounted() {
