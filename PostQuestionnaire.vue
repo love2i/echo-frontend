@@ -92,9 +92,6 @@
     },
     methods: {
       addQuestion() {
-          if (!this.validateList()) {
-        return
-       }
         const questionSample = {
           title: '样例问题，这里写你的问题',
           type: 1,
@@ -122,7 +119,21 @@
       handleConfirm(q) {
         q.edit = false
       },
+      validateList() {
+        let errMsg = ''
+        if (!this.questionList || this.questionList.length <= 0) errMsg = '请填写问题'
+        if (!this.title || this.title.length <= 0) errMsg = '请填写title'
+        console.log(errMsg)
+        if (errMsg !== '') {
+          this.$message.error(errMsg)
+          return false
+        }
+        return true
+      },
       publish() {
+        if (!this.validateList()) {
+          return
+        }
         let postData = {
           list: this.questionList,
           //     [
@@ -158,16 +169,6 @@
                 this.$message.error('发布失败' + res.errMsg)
               }
             })
-      },
-        validateList() {
-        let errMsg = ''
-        if (!this.questionList|| this.questionList.length <= 0) errMsg = '请填写选项'
-        console.log(errMsg)
-        if (errMsg !== '') {
-          this.$message.error(errMsg)
-          return false
-        }
-        return true
       }
     }
   }

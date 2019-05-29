@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-table :data="tableData.list" ref="complaintTable" v-loading="isLoading">
+    <el-table :data="tableData.list" v-loading="isLoading">
       <el-table-column v-for="(config,index) in tableConfig"
                        :key="index"
                        :prop="config.prop"
@@ -9,8 +9,6 @@
       </el-table-column>
 
       <el-table-column label="当前状态">
-<!--                       :filters="[{text: '已完成', value: 1}, {text: '待处理', value: '0'}]"-->
-<!--                       :filter-method="filterHandler"-->
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status===0" type="warning" size="medium">待处理</el-tag>
           <el-tag v-else-if="scope.row.status===1" type="primary" size="medium">处理中</el-tag>
@@ -20,28 +18,17 @@
 
       <el-table-column label="状态">
         <template slot-scope="scope">
-          <el-button type="primary" @click="openDialog(scope.row)">修改状态</el-button>
+          <el-button type="primary" @click="fuck(scope.row)">修改状态</el-button>
         </template>
       </el-table-column>
 
-      <el-table-column label="操作">
+
+    <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button type="primary" @click="openDialog2(scope.row)">查看回复</el-button>
         </template>
       </el-table-column>
     </el-table>
-
-    <div class="pagination">
-      <el-pagination
-              background
-              :page-size="page.pageSize"
-              :page-count="page.pages"
-              :current-page="page.pageNum"
-              :total="page.total"
-              @current-change="handleChange"
-              layout="prev, pager, next">
-      </el-pagination>
-    </div>
 
     <el-dialog
             title="提示"
@@ -63,7 +50,7 @@
     </el-dialog>
 
     <el-dialog
-            title="对申诉的回复"
+            title="对维修的回复"
             :visible.sync="dialogVisible2"
             width="60%">
       <el-table :data="tableData2.list" ref="replyTable" v-loading="isLoading2">
@@ -97,42 +84,60 @@
       </span>
     </el-dialog>
 
+    <div class="pagination">
+      <el-pagination
+              background
+              :page-size="page.pageSize"
+              :page-count="page.pages"
+              :current-page="page.pageNum"
+              :total="page.total"
+              @current-change="handleChange"
+              layout="prev, pager, next">
+      </el-pagination>
+    </div>
   </div>
 </template>
 
 <script>
-  import {GET_ALL_COMPLAINTS} from "../../apis/complaint";
+  import {GET_ALL_REPAIRS} from "../../apis/complaint";
 
   export default {
-    name: 'Complaint',
+    name: "RepairList",
     data() {
       return {
-        status: undefined,
-        isLoading:false,
-        dialogVisible: false,
+        isLoading: false,
         isLoading2:false,
         dialogVisible2: false,
         tableData: {},
         tableData2: {},
         tableConfig: [
+          // {
+          //   label: 'id',
+          //   prop: 'id',
+          //   sortable: false
+          // },
           {
             label: '学生',
             prop: 'student_id',
-            sortable: true
+            sortable: false
+          },
+          {
+            label: '楼号',
+            prop: 'building',
+            sortable: false
           }, {
-            label: '投诉内容',
+            label: '宿舍',
+            prop: 'room',
+            sortable: false
+          }, {
+            label: '报修内容',
             prop: 'content',
             sortable: false
           }, {
             label: '联系电话',
             prop: 'telephone',
-            sortable: true
-          }, {
-            label: '发布时间',
-            prop: 'time',
-            sortable: true
-          },
-        ],
+            sortable: false
+          }],
         tableConfig2: [
           {
             label: '姓名',
@@ -148,43 +153,34 @@
             sortable: true
           },
         ],
-        textarea: '',       
-        page:{
-          pageSize:10,
-          pages:1,
-          pageNum:1,
-          total:0
+        textarea: '', 
+        dialogVisible: false,
+        status: '',
+        page: {
+          pageSize: 10,
+          pages: 1,
+          pageNum: 1,
+          total: 0
         },
-        selected:{}
+        selected: ''
       }
-  
     },
     methods: {
-      getComplaints() {
-        this.isLoading=true
-        // GET_ALL_COMPLAINTS()
-        this.$axios.get('https://api.echo.ituoniao.net/api/web/complaint/getAllComplaints?pageNum='+this.page.pageNum+'&pageSize='+this.page.pageSize)
+      getRepairList() {
+        this.isLoading = true
+        this.$axios.get('https://api.echo.ituoniao.net/api/web/repair/getAllRepairs?pageNum=' + this.page.pageNum + '&pageSize=' + this.page.pageSize)
             .then(res => {
-              console.log(res)
               if (res.success) {
                 this.tableData = res.data
-                this.page.pages=res.data.pages
-                this.page.pageNum=res.data.pageNum
-                this.page.pageSize=res.data.pageSize
-                this.page.total=res.data.total
+              } else {
+                this.$message.error('获取维修列表出错')
               }
             })
-            .catch(err=>{
-              console.error(err)
-              this.$message.error('网络开了点小差哦~~')
-            })
-            .then(_ =>{
-              this.isLoading=false
-            })
+        this.isLoading = false
       },
       getReplys() {
         this.isLoading2=true
-        this.$axios.get('https://api.echo.ituoniao.net/api/web/complaint/getAllReplyById'+this.student_id)
+        this.$axios.get('https://api.echo.ituoniao.net/api/web/repair/getAllReplyById '+this.student_id)
             .then(res => {
               console.log(res)
               if (res.success) {
@@ -201,12 +197,7 @@
             .then(_ =>{
               this.isLoading2=false
             })
-      },     
-      openDialog(row) {
-        this.selected=row
-        this.dialogVisible = true
-        this.status = row.status
-      },
+      }, 
       openDialog2(row) {
         this.selected=row
         this.dialogVisible2 = true
@@ -218,20 +209,14 @@
         this.status = row.status
       },
       updateState() {
-        this.$axios.get('https://api.echo.ituoniao.net/api/web/complaint/changeStatus?id='+this.selected.id+'&status='+this.status)
-            .then(res=>{
-              if (res.success){
-                this.$message({message:'修改成功',type:'success'})
-                this.getComplaints()
-              } else{
-                this.$message.error('出错了哦：'+res.errMsg)
+        this.$axios.get('https://api.echo.ituoniao.net/api/web/repair/changeStatus?id=' + this.selected.id + '&status=' + this.status)
+            .then(res => {
+              if (res.success) {
+                this.$message({message: '修改成功', type: 'success'})
+                this.getRepairList()
+              } else {
+                this.$message.error('出错了哦：' + res.errMsg)
               }
-            })
-            .catch(err=>{
-              console.error(err)
-              this.$message.error('网络开了点小差哦~~')
-            })
-            .then(_ =>{
             })
         this.dialogVisible = false
       },
@@ -258,20 +243,21 @@
             })
         this.dialogVisible3 = false
       },
-      filterHandler(value, row, column) {
+      handleChange(val) {
+        this.pageNum.pageNum = val
+        this.getRepairList()
       },
-      handleChange(val){
-        this.isLoading=true
-        this.page.pageNum=val
-        this.getComplaints()
+      fuck(row) {
+        this.selected = row
+        this.status = row.status
+        this.dialogVisible = true
       }
     },
     mounted() {
-      this.getComplaints()
+      this.getRepairList()
       this.getReplys()
     }
   }
-
 </script>
 
 <style scoped>
