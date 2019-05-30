@@ -119,7 +119,24 @@
       handleConfirm(q) {
         q.edit = false
       },
+      validateList() {
+        let errMsg = ''
+        if (!this.questionList || this.questionList.length <= 0) errMsg = '请填写问卷'
+        for(var i = 0;i<questionList.length;i++){
+        if (!this.questionList[i] || this.questionList[i].length <= 0) errMsg = '请填写选项'+(i+1)
+        }       
+        if (!this.title || this.title.length <= 0) errMsg = '请填写title'
+        console.log(errMsg)
+        if (errMsg !== '') {
+          this.$message.error(errMsg)
+          return false
+        }
+        return true
+      },
       publish() {
+        if (!this.validateList()) {
+          return
+        }
         let postData = {
           list: this.questionList,
           //     [
