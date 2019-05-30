@@ -18,9 +18,15 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="opeartion">
+      <el-table-column label="状态">
         <template slot-scope="scope">
           <el-button type="primary" @click="openDialog(scope.row)">修改状态</el-button>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-button type="primary" @click="openDialog2(scope.row)">查看回复</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -55,7 +61,42 @@
         <el-button type="primary" @click="updateState()">确 定</el-button>
       </span>
     </el-dialog>
-  </div>
+
+    <el-dialog
+            title="对申诉的回复"
+            :visible.sync="dialogVisible2"
+            width="60%">
+      <el-table :data="tableData2" ref="replyTable" v-loading="isLoading2">
+      <el-table-column v-for="(config,index) in tableConfig2"
+                       :key="index"
+                       :prop="config.prop"
+                       :label="config.label"
+                       :sortable="config.sortable">
+      </el-table-column>
+     </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible2 = false">取 消</el-button>
+        <el-button type="primary" @click="openDialog3()">回复</el-button>
+      </span>
+    </el-dialog>
+   
+
+    <el-dialog
+            title="新增回复"
+            :visible.sync="dialogVisible3"
+            width="40%">
+         <el-input
+           type=" textarea"
+           :rows="2"
+           placeholder="请输入回复内容"
+           v-model=" textarea">
+         </el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible3 = false">取 消</el-button>
+        <el-button type="primary" @click="updateState2()">确 定</el-button>
+      </span>
+    </el-dialog>
+ </div>
 </template>
 
 <script>
@@ -67,8 +108,12 @@
       return {
         status: undefined,
         isLoading:false,
+        isLoading2:false,
         dialogVisible: false,
+        dialogVisible2: false,
+        dialogVisible3: false,
         tableData: {},
+        tableData2: {},
         tableConfig: [
           {
             label: '学生',
@@ -88,6 +133,22 @@
             sortable: true
           },
         ],
+        tableConfig2: [
+          {
+            label: '姓名',
+            prop: 'reply_type',
+            sortable: true
+          }, {
+            label: '回复内容',
+            prop: 'content',
+            sortable: true
+          }, {
+            label: '回复时间',
+            prop: 'reply_time',
+            sortable: true
+          },
+        ],
+        textarea: '',       
         page:{
           pageSize:10,
           pages:1,
@@ -95,7 +156,9 @@
           total:0
         },
         selected:{}
+      
       }
+  
     },
     methods: {
       getComplaints() {
@@ -110,6 +173,7 @@
                 this.page.pageNum=res.data.pageNum
                 this.page.pageSize=res.data.pageSize
                 this.page.total=res.data.total
+                this.id=res.data.id
               }
             })
             .catch(err=>{
@@ -120,9 +184,41 @@
               this.isLoading=false
             })
       },
+      getReplys(id) {
+        this.isLoading2=true
+        this.$axios.get('https://api.echo.ituoniao.net/api/web/complaint/getAllReplyById?id='+id)
+            .then(res => {
+              console.log(res)
+              if (res.success) {
+              this.tableData2 = res.data
+              this.reply_time = res.reply_time 
+              this.reply_style = res.reply_style
+              this.content = res.content 
+              }
+            })
+            .catch(err=>{
+              console.error(err)
+              this.$message.error('网络开了点小差哦~~')
+            })
+            .then(_ =>{
+              this.isLoading2=false
+            })
+      },     
       openDialog(row) {
         this.selected=row
         this.dialogVisible = true
+        this.status = row.status
+      },
+      openDialog2(row) {
+         console.log('openDialog2 row =>',row)
+        this.selected=row
+        this.getReplys(row.id)
+        this.dialogVisible2 = true
+        this.status = row.status
+      },
+      openDialog3(row) {
+        this.selected=row
+        this.dialogVisible3 = true
         this.status = row.status
       },
       updateState() {
@@ -143,6 +239,29 @@
             })
         this.dialogVisible = false
       },
+      updateState2() {
+          let postData = {
+          reply_type: this.reply_type,
+          reply_time: Date(),
+          content:this.textarea
+          }
+        this.$axios.post('https://api.echo.ituoniao.net/api/web/complaint/complaintReply?reply_type='+this.reply_type, postData)
+            .then(res=>{
+              if (res.success){
+                this.$message({message:'回复成功',type:'success'})
+                this.getReplys()
+              } else{
+                this.$message.error('出错了哦：'+res.errMsg)
+              }
+            })
+            .catch(err=>{
+              console.error(err)
+              this.$message.error('网络开了点小差哦~~')
+            })
+            .then(_ =>{
+            })
+        this.dialogVisible3 = false
+      },
       filterHandler(value, row, column) {
       },
       handleChange(val){
@@ -155,6 +274,7 @@
       this.getComplaints()
     }
   }
+
 </script>
 
 <style scoped>
