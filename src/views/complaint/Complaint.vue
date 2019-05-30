@@ -79,8 +79,6 @@
         <el-button type="primary" @click="openDialog3()">回复</el-button>
       </span>
     </el-dialog>
-   
-
     <el-dialog
             title="新增回复"
             :visible.sync="dialogVisible3"
@@ -136,7 +134,7 @@
         tableConfig2: [
           {
             label: '姓名',
-            prop: 'reply_type',
+            prop: 'reply_style',
             sortable: true
           }, {
             label: '回复内容',
@@ -214,12 +212,9 @@
         this.selected=row
         this.getReplys(row.id)
         this.dialogVisible2 = true
-        this.status = row.status
       },
-      openDialog3(row) {
-        this.selected=row
+      openDialog3() {
         this.dialogVisible3 = true
-        this.status = row.status
       },
       updateState() {
         this.$axios.get('https://api.echo.ituoniao.net/api/web/complaint/changeStatus?id='+this.selected.id+'&status='+this.status)
@@ -241,11 +236,11 @@
       },
       updateState2() {
           let postData = {
-          reply_type: this.reply_type,
+          reply_style: this.reply_style,
           reply_time: Date(),
           content:this.textarea
           }
-        this.$axios.post('https://api.echo.ituoniao.net/api/web/complaint/complaintReply?reply_type='+this.reply_type, postData)
+        this.$axios.post('https://api.echo.ituoniao.net/api/web/complaint/complaintReply?reply_style='+this.reply_style, postData)
             .then(res=>{
               if (res.success){
                 this.$message({message:'回复成功',type:'success'})
