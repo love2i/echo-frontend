@@ -44,41 +44,29 @@
             </el-select>
           </el-col>
         </el-form-item>
-        <el-form-item label="批量导入">
-          <el-upload
-                  class="upload-demo"
-                  drag
-                  action=""
-                  multiple>
-            <i class="el-icon-upload"></i>
-            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-            <div class="el-upload__tip" slot="tip">上传需要导入的文件</div>
-          </el-upload>
-        </el-form-item>
+
         <el-form-item>
           <el-button type="primary" @click="onSubmit">立即创建</el-button>
           <el-button type="">取消</el-button>
-          <!--          <el-button plain type="primary" size="normal" @click="showDialog=!showDialog">批量导入</el-button>-->
+          <el-button plain type="primary" size="normal" @click="showDialog=!showDialog">批量导入</el-button>
         </el-form-item>
       </el-form>
     </div>
 
     <el-dialog :visible.sync="showDialog">
-      <el-upload
-              class="upload-demo"
-              drag
-              action="/"
-              multiple>
-        <i class="el-icon-upload"></i>
-        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-        <div class="el-upload__tip" slot="tip">上传需要导入的文件</div>
-      </el-upload>
+      <h1>{{ msg }}</h1> 
+      <form> <input type="file" @change="getFile($event)"> 
+      <button class="button button-primary button-pill button-small" @click="submit($event)">提交</button> 
+      </form> 
     </el-dialog>
-
   </div>
+
+
+
 </template>
 
 <script>
+ import axios from 'axios';
   export default {
     name: 'SaveDormitoryInfo',
     data() {
@@ -93,7 +81,11 @@
           room: '',
         },
         dormitories: this.$store.getters.dormitories,
-        buildings:this.$store.getters.buildings
+        buildings:this.$store.getters.buildings,
+
+        msg: '请选择文件上传',
+        file: ''
+
       }
     },
     methods: {
@@ -129,7 +121,21 @@
             this.form.building > 0 &&
             this.form.room > 0 &&
             this.form.zone > 0)
-      }
+      },
+      getFile: function (event) { 
+        this.file = event.target.files[0]; 
+        console.log(this.file); 
+        }, 
+      submit: function (event) { //阻止元素发生默认的行为 
+        event.preventDefault(); 
+        let formData = new FormData(); 
+        formData.append("file", this.file); 
+        axios.post('/api/web/dormitory/uploadDorms', formData) 
+        .then(function (response) { alert(response.data); console.log(response); 
+        window.location.reload(); }) .catch(function (error) { alert("上传失败");
+         console.log(error); window.location.reload(); }); 
+         }
+
     }
   }
 </script>
