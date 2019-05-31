@@ -1,11 +1,12 @@
 <template>
   <div>
-    <el-table :data="tableData.list" v-loading="isLoading">
-      <el-table-column v-for="(config,index) in tableConfig"
-                       :key="index"
-                       :prop="config.prop"
-                       :label="config.label"
-                       :sortable="config.sortable">
+    <el-table :data="tableData.list" ref="repairTable" v-loading="isLoading">
+      <el-table-column 
+        v-for="(config,index) in tableConfig"
+        :key="index"
+        :prop="config.prop"
+        :label="config.label"
+        :sortable="config.sortable">
       </el-table-column>
 
       <el-table-column label="当前状态">
@@ -25,7 +26,7 @@
 
     <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" @click="openDialog2(scope.row)">查看回复</el-button>
+          <el-button type="primary" @click="openReplyList(scope.row)">查看回复</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -51,10 +52,10 @@
 
     <el-dialog
             title="对维修的回复"
-            :visible.sync="dialogVisible2"
+            :visible.sync="replyDialogVisible"
             width="60%">
-      <el-table :data="tableData2" ref="replyTable" v-loading="isLoading2">
-      <el-table-column v-for="(config,index) in tableConfig2"
+      <el-table :data="replyTableData" ref="replyTable" >
+      <el-table-column v-for="(config,index) in replyTableConfig"
                        :key="index"
                        :prop="config.prop"
                        :label="config.label"
@@ -63,7 +64,7 @@
      </el-table>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible2 = false">取 消</el-button>
-        <el-button type="primary" @click="openDialog3()">回复</el-button>
+        <el-button type="primary" @click="openReplyDialog()">回复</el-button>
       </span>
     </el-dialog>
    
@@ -75,15 +76,22 @@
          <el-input
            type=" textarea"
            :rows="2"
-           placeholder="请输入内容"
-           v-model=" textarea">
+           placeholder="请输入回复内容"
+           v-model="replyContent">
          </el-input>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible3 = false">取 消</el-button>
-        <el-button type="primary" @click="updateState2()">确 定</el-button>
+        <el-button type="primary" @click="replyRepair()">确 定</el-button>
       </span>
     </el-dialog>
 
+      <el-table-column label="身份">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.reply_type===0" size="medium">管理员</el-tag>
+          <el-tag v-else-if="scope.row.reply_type===1" size="medium">学生</el-tag>
+        </template>
+      </el-table-column>
+      
     <div class="pagination">
       <el-pagination
               background
@@ -107,11 +115,11 @@
       return {
         status: undefined,
         isLoading:false,
-        isLoading2:false,
-        dialogVisible2: false,
+        dialogVisible: false,
+        replyDialogVisible: false,
         dialogVisible3: false,
-        tableData: {},
-        tableData2: {},
+        tableData: [],
+        tableData2: [],
         tableConfig: [
           // {
           //   label: 'id',
@@ -140,12 +148,12 @@
             prop: 'telephone',
             sortable: false
           }],
-        tableConfig2: [
-          {
+        replyTableConfig: [
+          /*{
             label: '姓名',
-            prop: 'reply_style',
+            prop: 'reply_type',
             sortable: true
-          }, {
+          },*/ {
             label: '回复内容',
             prop: 'content',
             sortable: true
@@ -155,8 +163,7 @@
             sortable: true
           },
         ],
-        textarea: '', 
-        dialogVisible: false,
+        replyContent: '', 
         status: '',
         page: {
           pageSize: 10,
@@ -164,53 +171,63 @@
           pageNum: 1,
           total: 0
         },
-        selected: ''
+        selected: {}
       }
     },
     methods: {
       getRepairList() {
         this.isLoading = true
-        this.$axios.get('https://api.echo.ituoniao.net/api/web/repair/getAllRepairs?pageNum=' + this.page.pageNum + '&pageSize=' + this.page.pageSize)
+        this.$axios.get('https://api.echo.ituoniao.net/api/web/repair/getAllRepairs?pageNum=' +
+         this.page.pageNum + 
+         '&pageSize=' + 
+         this.page.pageSize)
             .then(res => {
               if (res.success) {
                 this.tableData = res.data
+                this.page.pages = res.data.pages;
+                this.page.pageNum = res.data.pageNum;
+                this.page.pageSize = res.data.pageSize;
+                this.page.total = res.data.total;
+                this.id = res.data.id;
               } else {
                 this.$message.error('获取维修列表出错')
               }
             })
-        this.isLoading = false
+        
+        .catch(err => {
+          console.error(err);
+          this.$message.error("网络开了点小差哦~~");
+        })
+        .then(_ => {
+          this.isLoading = false;
+        })
       },
       getReplys(id) {
-        this.isLoading2=true
         this.$axios.get('https://api.echo.ituoniao.net/api/web/repair/getAllReplyById?id='+id)
             .then(res => {
               console.log(res)
               if (res.success) {
-              this.tableData2 = res.data
-              this.reply_time = res.reply_time 
-              this.reply_style = res.reply_style
-              this.content = res.content 
+              this.replyTableData = res.data
               }
             })
             .catch(err=>{
               console.error(err)
               this.$message.error('网络开了点小差哦~~')
             })
-            .then(_ =>{
-              this.isLoading2=false
-            })
       }, 
-      openDialog2(row) {
-        console.log('openDialog2 row =>',row)
-        this.selected=row
-        this.getReplys(row.id)
-        this.dialogVisible2 = true
+     openReplyList(row) {
+      this.selected = row;
+      this.getReplys(row.id);
+      this.replyDialogVisible = true;
       },
-      openDialog3() {
+       openReplyDialog() {
         this.dialogVisible3 = true
       },
       updateState() {
-        this.$axios.get('https://api.echo.ituoniao.net/api/web/repair/changeStatus?id=' + this.selected.id + '&status=' + this.status)
+        this.$axios.get('https://api.echo.ituoniao.net/api/web/repair/changeStatus?id=' + 
+        this.selected.id + 
+        '&status=' + 
+        this.status)
             .then(res => {
               if (res.success) {
                 this.$message({message: '修改成功', type: 'success'})
@@ -219,19 +236,24 @@
                 this.$message.error('出错了哦：' + res.errMsg)
               }
             })
-        this.dialogVisible = false
+        .catch(err => {
+          console.error(err);
+          this.$message.error("网络开了点小差哦~~");
+        })
+      this.dialogVisible = false;
       },
-      updateState2() {
-          let postData = {
-          reply_style: this.reply_style,
-          reply_time: Date(),
-          content:this.textarea
-          }
-        this.$axios.post('https://api.echo.ituoniao.net/api/web/complaint/complaintReply?reply_style='+reply_style, postData)
+      replyRepair() {
+        this.$axios
+        .post("https://api.echo.ituoniao.net/api/web/repair/repairReply?id=" + this.selected.id, this.replyContent,{
+            headers:{
+              "Content-Type": 'text/plain',
+              'Cache-Control': 'no-cache'
+            }
+          })   
             .then(res=>{
               if (res.success){
                 this.$message({message:'回复成功',type:'success'})
-                this.getReplys()
+                this.getReplys(this.selected.id)
               } else{
                 this.$message.error('出错了哦：'+res.errMsg)
               }
@@ -245,6 +267,7 @@
         this.dialogVisible3 = false
       },
       handleChange(val) {
+        this.isLoading = true;
         this.pageNum.pageNum = val
         this.getRepairList()
       },
