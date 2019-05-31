@@ -12,14 +12,15 @@
       </el-tab-pane>
     </el-tabs>
       <el-form>
-        <el-form-item>
-          <el-button plain type="primary" size="normal" @click="showDialog=!showDialog">上传文件</el-button>
+        <el-form-item >
+          <el-button plain type="primary" style="position: fixed;right: 80px"
+           size="normal" @click="showDialog=!showDialog">导入数据</el-button>
         </el-form-item>
       </el-form>
       <el-dialog :visible.sync="showDialog">
         <h1>{{ msg }}</h1> 
         <form> <input type="file" @change="getFile($event)"> 
-        <button class="button button-primary button-pill button-small" @click="submit($event)">提交</button> 
+        <button class="button button-primary button-pill button-small" @click="submitFile($event)">提交</button> 
         </form> 
       </el-dialog>
   </div>
@@ -43,12 +44,33 @@
         activeName: 'waterFee',
         tableData: {},
         waterData: {},
-        msg: '请选择文件上传',
+        msg: '请选择Excel上传',
         file: '',
         electricityData: {}
       }
     },
     methods: {
+    getFile(event) { 
+        this.file = event.target.files[0]; 
+        console.log(this.file); 
+        }, 
+    submitFile(e) {
+      event.preventDefault();
+      let formData = new FormData()
+      formData.append('file',this.file)
+      console.log('form data file => ',formData)
+      this.$axios
+      .post('https://api.echo.ituoniao.net/api/web/fee/uploadFees',
+      formData)
+        .then(res => {
+          console.log(res)
+          if (res.success) {
+            this.$message({ message: "上传成功", type: "success" });
+          } else {
+            this.$message.error(res.errMsg);
+          }
+        })
+    },
       handleClick() {
       },
       reloadFees() {
@@ -57,19 +79,6 @@
     },
     mounted() {
     },
-    getFile:function (event) { 
-        this.file = event.target.files[0]; 
-        console.log(this.file); 
-        }, 
-    submit:function (event) { //阻止元素发生默认的行为 
-        event.preventDefault(); 
-        let formData = new FormData(); 
-        formData.append("file", this.file); 
-        axios.post('/api/web/fee/uploadFees', formData) 
-        .then(function (response) { alert(response.data); console.log(response); 
-        window.location.reload(); }) .catch(function (error) { alert("上传失败");
-         console.log(error); window.location.reload(); }); 
-         }
   }
 </script>
 
