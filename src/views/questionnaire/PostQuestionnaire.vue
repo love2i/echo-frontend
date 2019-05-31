@@ -121,11 +121,25 @@
       },
       validateList() {
         let errMsg = ''
-        if (!this.questionList || this.questionList.length <= 0) errMsg = '请填写问卷'
-        for(var i = 0;i<questionList.length;i++){
-        if (!this.questionList[i] || this.questionList[i].length <= 0) errMsg = '请填写选项'+(i+1)
-        }       
-        if (!this.title || this.title.length <= 0) errMsg = '请填写title'
+      for (var i = 0; i < this.questionList.length; i++){var question = this.questionList[i]
+      if (question.title === '') {
+        errMsg = '请填写问题' + (i + 1) + '的标题'
+      }
+      else {
+        var options = question.options
+        if (options.length === 0) {
+          errMsg = '问题' + (i + 1) + '的选项为空'
+        }
+        else {
+          for (var j = 0; j < options.length; j++) {
+            if (options[j].content === '') {
+              errMsg = '问题' + (i + 1) + '的第' + (j + 1) +'个选项内容为空'
+                }
+              }
+
+             }
+           }
+         }
         console.log(errMsg)
         if (errMsg !== '') {
           this.$message.error(errMsg)
